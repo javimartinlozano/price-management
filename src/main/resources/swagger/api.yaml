@@ -1,0 +1,147 @@
+swagger: '2.0'
+info:
+  description: Contains operations to manage product prices
+  version: 0.0.1
+  title: Price API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+host: localhost:8080
+basePath: /api/prices
+schemes:
+  - http
+
+tags:
+  - name: price
+    description: Price Controller
+
+parameters:
+  brandId:
+    name: brandId
+    type: integer
+    required: true
+    in: path
+    description: 'Brand id'
+    x-example: '1'
+  productId:
+    name: productId
+    type: integer
+    required: true
+    in: path
+    description: 'Product id'
+    x-example: '35455'
+  date:
+    name: date
+    type: string
+    required: true
+    in: header
+    description: 'Request date'
+    x-example: '2020-12-31T23:59:59'
+
+paths:
+  /brands/{brandId}/products/{productId}:
+    get:
+      tags:
+        - price
+      summary: Get price of the products attending to ids and request date
+      operationId: getListProductPrice
+      produces:
+        - '*/*'
+      parameters:
+        - $ref: '#/parameters/brandId'
+        - $ref: '#/parameters/productId'
+        - $ref: '#/parameters/date'
+      responses:
+        '200':
+          description: Prices list found
+          schema:
+            $ref: '#/definitions/Price'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/BadRequest'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/NotFound'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/InternalServerError'
+      deprecated: false
+definitions:
+  Price:
+    type: object
+    properties:
+      productId:
+        type: integer
+        description: 'Product id'
+        example: 35455
+      brandId:
+        type: integer
+        description: 'Brand id'
+        example: 1
+      price:
+        type: integer
+        format: int64
+        description: 'final sale price'
+        example: 38.95
+      startDate:
+        type: string
+        format: date
+        description: 'Date on which the indicated price rate applies'
+        example: '2020-06-14-00.00.00'
+      endDate:
+        type: string
+        format: date
+        description: 'Date on which the indicated price rate applies'
+        example: '2020-06-15-11.00.00'
+  BadRequest:
+    type: object
+    properties:
+      code:
+        type: string
+        example: 400
+        description: "HTTP status code"
+      level:
+        type: string
+        example: "ERROR"
+      message:
+        type: string
+        example: "Bad Request"
+      description:
+        type: string
+        example: "Error found in request"
+  NotFound:
+    type: object
+    properties:
+      code:
+        type: string
+        example: 404
+        description: "HTTP status code"
+      level:
+        type: string
+        example: "ERROR"
+      message:
+        type: string
+        example: "Not found"
+      description:
+        type: string
+        example: "Server cannot find the requested resource"
+  InternalServerError:
+    type: object
+    properties:
+      code:
+        type: string
+        example: 500
+        description: "HTTP status code"
+      level:
+        type: string
+        example: "ERROR"
+      message:
+        type: string
+        example: "Internal Server Error"
+      description:
+        type: string
+        example: "Something went wrong"
